@@ -1,0 +1,8 @@
+com.googlecode.goclipse.documentor.path=/Users/yaotian/projects/new_go_projects/bin/gocode
+com.googlecode.goclipse.formatter.path=/Users/yaotian/projects/ENV/go/bin/gofmt
+com.googlecode.goclipse.goarch=
+com.googlecode.goclipse.goos=
+com.googlecode.goclipse.gopath=\:\:/Users/yaotian/projects/new_go_projects\:/Users/yaotian/projects/go_projects
+com.googlecode.goclipse.goroot=/Users/yaotian/projects/ENV/go
+eclipse.preferences.version=1
+toolchain_prefs.use_project_settings=true
