@@ -19,8 +19,11 @@ package apps
 import (
 	"fmt"
 	"net/url"
+	"strings"
+	"encoding/json"
 
 	"github.com/astaxie/beego/httplib"
+	"github.com/astaxie/beego"
 
 	"github.com/yaotian/domain-social-auth"
 )
@@ -42,6 +45,8 @@ func (p *QQ) GetPath() string {
 }
 
 func (p *QQ) GetIndentify(tok *social.Token) (string, error) {
+	vals := make(map[string]interface{})
+
 	uri := "https://graph.qq.com/oauth2.0/me?access_token=" + url.QueryEscape(tok.AccessToken)
 	req := httplib.Get(uri)
 	req.SetTransport(social.DefaultTransport)
@@ -50,17 +55,37 @@ func (p *QQ) GetIndentify(tok *social.Token) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	beego.Info("get indentify body:", body)
+	body = strings.Replace(body, "callback( ", "", -1)
+	body = strings.Replace(body, " );", "", -1)
+	beego.Info("get indentify body2:", body)
 
-	vals, err := url.ParseQuery(body)
-	if err != nil {
+	//
+	//	vals, err := url.ParseQuery(body)
+	//	if err != nil {
+	//		return "", err
+	//	}
+
+	//	resp, err := req.Response()
+	//	if err != nil {
+	//		return "", err
+	//	}
+	//	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(strings.NewReader(body))
+	decoder.UseNumber()
+
+	if err := decoder.Decode(&vals); err != nil {
 		return "", err
 	}
 
-	if vals.Get("code") != "" {
-		return "", fmt.Errorf("code: %s, msg: %s", vals.Get("code"), vals.Get("msg"))
-	}
+	beego.Info(vals)
 
-	return vals.Get("openid"), nil
+	if opid, ok := vals["openid"]; ok {
+		return fmt.Sprint(opid), nil
+	}else{
+		return "", fmt.Errorf("can't get qq identify")
+	}
 }
 
 var _ social.Provider = new(QQ)
